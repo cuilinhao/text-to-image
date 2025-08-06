@@ -7,11 +7,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node tests/api-test.js",
-    "test:optimized": "node tests/optimized-api-test.js",
-    "test:integration": "node tests/test-integrated-main.js",
-    "verify": "node scripts/verify-integration.js",
-    "integrate-fix": "node scripts/integrate-fix-to-main.js"
+    "test": "echo \"Use npm run test:apicore to test APICore integration\"",
+    "test:apicore": "echo \"APICore test page: http://localhost:8888/test-apicore-integration.html\"",
+    "clean": "rm -f *_backup_*.html",
+    "backup": "cp sora_image.html sora_image_backup_$(date +%s).html"
   },
   "keywords": [
     "ai",

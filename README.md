@@ -1,184 +1,214 @@
-# 🎨 Sora Image Demo - 批量图片生成器
+# 🎨 Sora Image Demo - AI图片生成工具
 
-基于云雾AI的智能图片生成工具，支持图转提示词和故事分镜批量生成。
+一个功能强大的AI图片生成工具，支持图转提示词和故事分镜批量生成，集成多个AI平台API。
 
-## ✨ 特性
+## ✨ 主要特性
 
-- 🖼️ **图转提示词**: 上传图片自动生成AI绘画提示词
-- 📖 **故事分镜**: 批量生成故事分镜图片
-- 🔄 **自动重试**: 网络异常时自动重试机制
-- ⏰ **超时保护**: 60秒请求超时保护
-- 🌐 **网络诊断**: 内置网络连接诊断工具
-- 📊 **详细日志**: 实时显示操作状态和错误信息
+- 🖼️ **图转提示词** - 上传图片自动生成AI绘画提示词
+- 📖 **故事分镜** - AI生成故事脚本并批量生成分镜图片
+- 🔄 **多API支持** - 云雾API + APICore平台双重保障
+- 🛠️ **错误修复** - 内置网络错误修复和重试机制
+- 📊 **实时调试** - 详细的操作日志和错误分析
+- 📱 **响应式设计** - 支持桌面和移动设备
 
 ## 🚀 快速开始
 
 ### 环境要求
+- Node.js 14+
+- npm 或 yarn
 
-- Node.js >= 14.0.0
-- npm >= 6.0.0
-
-### 安装依赖
-
+### 安装运行
 ```bash
+# 克隆项目
+git clone <repository-url>
+cd text-to-image
+
+# 安装依赖
 npm install
-```
 
-### 启动服务
-
-```bash
+# 启动开发服务器
 npm run dev
+
+# 访问应用
+open http://localhost:8888
 ```
 
-### 访问应用
+## 🔑 API配置
 
-- 主页面: http://localhost:8888
-- 修复测试页面: http://localhost:8888/test-fixed-api.html
-- 优化测试页面: http://localhost:8888/test-optimized-api.html
+### 必需的API Keys
 
-## 🔧 配置
+1. **OpenRouter API Key** - 用于AI提示词生成
+   - 获取地址：https://openrouter.ai/
+   - 用途：图片分析和提示词生成
 
-### API Key 配置
+2. **云雾API Key** - 主要图片生成服务
+   - 获取地址：https://yunwu.ai/
+   - 模型：sora_image
 
-在页面中输入你的云雾API Key：
-```
-sk-VTv4s0IaV72yIgzMYIhvW6pg0h5ikOxeGMPq6ovHB8gi1U5q
-```
+3. **APICore API Key** - 备用图片生成服务
+   - 获取地址：https://doc.apicore.ai/
+   - 模型：sora_image
 
-### 支持的API端点
+### 配置方法
+在页面中直接输入对应的API Key即可，系统会自动保存到本地存储。
 
-- `https://yunwu.ai/v1/chat/completions` (推荐)
-- `https://yunwu.ai/v1/images/generations` (备用)
+## 📖 使用指南
+
+### 图转提示词功能
+1. 切换到"图转提示词"标签页
+2. 输入OpenRouter API Key
+3. 上传参考图片（支持多张）
+4. 点击"批量生成Prompts"
+5. 输入云雾或APICore API Key
+6. 点击"批量生成图片"
+
+### 故事分镜功能
+1. 切换到"故事提示词"标签页
+2. 输入故事描述或导入CSV文件
+3. 点击"生成故事脚本"
+4. 配置API Key和生成参数
+5. 点击"一键生成整个故事"
+
+## 🛠️ 技术架构
+
+### 前端技术
+- HTML5 + CSS3 + JavaScript (ES6+)
+- 响应式布局设计
+- 原生Fetch API + 错误修复补丁
+
+### 后端技术
+- Node.js + Express
+- 静态文件服务
+- 端口：8888
+
+### API集成
+- **OpenRouter API** - 多模型AI对话
+- **云雾API** - Sora图片生成
+- **APICore API** - 备用图片生成
+
+## 🔧 核心功能
+
+### 网络错误修复
+- ✅ 自动重试机制（失败时重试3次）
+- ✅ 60秒超时保护
+- ✅ 智能错误分类和解决建议
+- ✅ 详细的网络诊断工具
+
+### 图片处理
+- 自动图片压缩（1024px以内）
+- 支持多种图片格式
+- 批量处理能力
+- 实时进度显示
+
+### 用户体验
+- 直观的标签页界面
+- 实时调试日志
+- 一键下载功能
+- 批量操作支持
 
 ## 📁 项目结构
 
 ```
 text-to-image/
-├── src/                    # 源代码
-│   ├── fix-fetch-error.js  # 网络错误修复补丁
-│   └── yunwu-api-patch.js  # API优化补丁
-├── tests/                  # 测试文件
-│   ├── api-test.js         # API测试脚本
-│   ├── optimized-api-test.js # 优化API测试
-│   └── test-*.js           # 其他测试文件
-├── scripts/                # 工具脚本
-│   ├── integrate-fix-to-main.js # 修复集成脚本
-│   └── verify-integration.js   # 集成验证脚本
-├── docs/                   # 文档
-│   ├── API_Documentation.md    # API文档
-│   └── USAGE_GUIDE.md          # 使用指南
-├── public/                 # 静态文件
-│   ├── 工作簿4-木子年华.csv    # 测试数据
-│   ├── test-fixed-api.html     # 修复测试页面
-│   └── test-optimized-api.html # 优化测试页面
-├── sora_image.html         # 主页面 (已集成修复)
-├── server.js               # 服务器文件
-├── package.json            # 项目配置
-└── README.md               # 项目说明
+├── sora_image.html              # 主页面
+├── server.js                    # Express服务器
+├── package.json                 # 项目配置
+├── fix-fetch-error.js          # 网络修复补丁
+├── yunwu-api-patch.js          # API优化补丁
+├── test-fixed-api.html         # 修复测试页面
+├── test-optimized-api.html     # 优化测试页面
+├── API_Documentation.md        # API文档
+├── USAGE_GUIDE.md              # 详细使用指南
+└── public/                     # 静态资源
 ```
-
-## 🎯 功能说明
-
-### 图转提示词
-
-1. 上传参考图片
-2. 配置OpenRouter API Key
-3. 选择AI模型 (推荐GPT-4o Mini)
-4. 生成AI绘画提示词
-5. 使用云雾API生成图片
-
-### 故事分镜
-
-1. 输入故事描述或导入CSV文件
-2. 自动生成分镜脚本
-3. 为每个分镜指定参考图片
-4. 批量生成所有分镜图片
 
 ## 🔍 故障排除
 
-### Failed to fetch 错误
-
-项目已集成自动修复方案：
-- ✅ 自动重试机制 (3次)
-- ✅ 超时控制 (60秒)
-- ✅ 详细错误分析
-- ✅ 网络诊断工具
-
 ### 常见问题
 
-| 问题 | 解决方案 |
-|------|----------|
-| API连接失败 | 检查API Key，使用网络诊断 |
-| 图片生成失败 | 简化提示词，避免敏感内容 |
-| 页面加载异常 | 清除缓存，强制刷新 |
+**Q: 遇到"Failed to fetch"错误怎么办？**
+A: 项目已内置修复方案，会自动重试。如仍有问题，请：
+- 刷新页面（Ctrl+F5）
+- 检查网络连接
+- 使用"网络诊断"功能
 
-## 🧪 测试
+**Q: API连接失败怎么办？**
+A: 请检查：
+- API Key是否正确
+- 网络连接是否正常
+- 查看调试日志获取详细错误信息
 
-### 运行API测试
+**Q: 图片生成失败怎么办？**
+A: 可能原因：
+- 提示词包含敏感内容
+- API余额不足
+- 网络连接不稳定
 
-```bash
-node tests/api-test.js
-```
+### 调试工具
+- 页面底部的实时调试日志
+- "网络诊断"按钮
+- "测试连接"功能
+- 浏览器开发者工具控制台
 
-### 运行优化测试
-
-```bash
-node tests/optimized-api-test.js
-```
-
-### 验证集成状态
-
-```bash
-node scripts/verify-integration.js
-```
-
-## 📊 API支持
-
-### OpenRouter API
-- 用途: AI提示词生成
-- 支持模型: GPT-4o Mini, Claude-3, Gemini等
-- 端点: `https://openrouter.ai/api/v1/chat/completions`
+## 🎯 API端点说明
 
 ### 云雾API
-- 用途: 图片生成
-- 模型: sora_image
-- 端点: `https://yunwu.ai/v1/chat/completions`
+```
+POST https://yunwu.ai/v1/chat/completions
+POST https://yunwu.ai/v1/images/generations
+```
 
-## 🔒 安全说明
+### APICore API
+```
+POST https://api.apicore.ai/v1/images/generations
+```
 
-- API Key仅在客户端使用，不会上传到服务器
-- 支持密码类型输入框隐藏API Key
-- 生成的图片链接来自官方CDN
+### OpenRouter API
+```
+POST https://openrouter.ai/api/v1/chat/completions
+```
 
-## 📝 更新日志
+## 📊 性能优化
 
-### v1.2.0 (最新)
-- ✅ 修复 Failed to fetch 网络错误
-- ✅ 集成自动重试机制
-- ✅ 添加超时保护
-- ✅ 增强网络诊断功能
-- ✅ 优化API调用成功率
+- 图片自动压缩减少传输时间
+- 请求去重避免重复调用
+- 智能重试提高成功率
+- 批量处理提升效率
 
-### v1.1.0
-- ✅ 支持故事分镜批量生成
-- ✅ 添加CSV导入功能
-- ✅ 优化用户界面
+## 🔒 安全考虑
 
-### v1.0.0
-- ✅ 基础图转提示词功能
-- ✅ 云雾API集成
-- ✅ OpenRouter API支持
+- API Key仅存储在浏览器本地
+- 不上传敏感信息到服务器
+- 输入内容自动过滤
+- 错误信息脱敏处理
 
-## 🤝 贡献
+## 📈 更新计划
 
-欢迎提交Issue和Pull Request来改进项目。
+- [ ] 支持更多AI模型
+- [ ] 添加图片编辑功能
+- [ ] 优化移动端体验
+- [ ] 增加用户管理系统
+
+## 🤝 贡献指南
+
+1. Fork 项目
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 打开 Pull Request
 
 ## 📄 许可证
 
-MIT License
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
 
-## 🙏 致谢
+## 📞 支持与反馈
 
-- [云雾AI](https://yunwu.ai) - 图片生成API
-- [OpenRouter](https://openrouter.ai) - AI模型API
-- [Express.js](https://expressjs.com) - Web服务器框架
+如果您遇到问题或有建议，请：
+- 查看 [USAGE_GUIDE.md](USAGE_GUIDE.md) 详细使用指南
+- 查看 [API_Documentation.md](API_Documentation.md) API文档
+- 使用页面内置的调试工具
+- 提交 Issue 或 Pull Request
+
+---
+
+🎨 **开始创作您的AI艺术作品吧！**

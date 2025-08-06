@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>APICore集成测试</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .control-group {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .control-group h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        input[type="text"], input[type="password"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        button.secondary {
+            background-color: #52c41a;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .debug {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .image-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: white;
+            margin-bottom: 15px;
+        }
+        .image-item img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 4px;
+        }
+        .success-notice {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 APICore集成测试</h1>
+        
+        <div class="success-notice">
+            <h4 style="margin: 0 0 10px 0; color: #52c41a;">🎯 APICore平台特性</h4>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li><strong>模型</strong>：sora_image (与云雾API相同模型)</li>
+                <li><strong>端点</strong>：https://api.apicore.ai/v1/images/generations</li>
+                <li><strong>格式</strong>：标准OpenAI Images API格式</li>
+                <li><strong>支持参数</strong>：size, quality, response_format, n</li>
+                <li><strong>作为备用平台</strong>：当云雾API不可用时自动切换</li>
+            </ul>
+        </div>
+        
+        <div class="control-group">
+            <h3>🔑 APICore配置</h3>
+            
+            <div class="input-group">
+                <label for="apicoreApiKey">APICore API Key:</label>
+                <div class="button-group">
+                    <input type="password" id="apicoreApiKey" placeholder="输入你的APICore API Key" value="" style="flex: 1;">
+                    <button onclick="testConnection()" id="testBtn">测试连接</button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="imageSize">图片尺寸:</label>
+                <select id="imageSize">
+                    <option value="256x256">256x256</option>
+                    <option value="512x512">512x512</option>
+                    <option value="1024x1024" selected>1024x1024</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="imageQuality">图片质量:</label>
+                <select id="imageQuality">
+                    <option value="standard">标准</option>
+                    <option value="hd" selected>高清</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <h3>🎨 图片生成测试</h3>
+            
+            <div class="input-group">
+                <label for="promptText">提示词:</label>
+                <textarea id="promptText" placeholder="输入图片生成提示词...">一个可爱的咖啡杯头宝宝，穿着粉色芭蕾舞裙，在阳光明媚的公园里开心地跳舞。中景，正面视角，电影场景，写实风格，高清画质，细节清晰，光线充足，3D渲染。ratio 9:16</textarea>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="generateImage()" id="generateBtn" class="secondary">生成图片</button>
+                <button onclick="clearLog()" style="background-color: #ff4d4f;">清空日志</button>
+            </div>
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <div style="margin-top: 20px;">
+            <h3 style="color: #333;">🔍 调试日志</h3>
+            <div class="debug" id="debug">等待操作...</div>
+        </div>
+    </div>
+
+    <!-- 加载必要的补丁 -->
+    <script src="src/patches/apicore-integration.js"></script>
+    
+    <script>
+        // 增强的fetch函数（简化版）
+        async function enhancedFetch(url, options = {}) {
+            const maxRetries = 3;
+            const retryDelay = 2000;
+            
+            const defaultOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Sora-Image-Demo/1.0',
+                    ...options.headers
+                },
+                signal: AbortSignal.timeout(60000),
+                ...options
+            };
+            
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    console.log(`🔄 尝试第 ${attempt} 次请求: ${url}`);
+                    
+                    const response = await fetch(url, defaultOptions);
+                    
+                    if (response.ok || (response.status >= 400 && response.status < 500)) {
+                        return response;
+                    }
+                    
+                    if (response.status >= 500 && attempt < maxRetries) {
+                        console.log(`⚠️ 服务器错误 (${response.status})，${retryDelay/1000}秒后重试...`);
+                        await new Promise(resolve => setTimeout(resolve, retryDelay));
+                        continue;
+                    }
+                    
+                    return response;
+                    
+                } catch (error) {
+                    console.log(`❌ 请求异常 (尝试 ${attempt}/${maxRetries}): ${error.message}`);
+                    
+                    if (attempt === maxRetries) {
+                        throw new Error(`请求失败 (${maxRetries}次尝试): ${error.message}`);
+                    }
+                    
+                    console.log(`⏳ ${retryDelay/1000}秒后重试...`);
+                    await new Promise(resolve => setTimeout(resolve, retryDelay));
+                }
+            }
+        }
+        
+        // 测试连接
+        async function testConnection() {
+            const apiKey = document.getElementById('apicoreApiKey').value;
+            const testBtn = document.getElementById('testBtn');
+            const debug = document.getElementById('debug');
+            
+            if (!apiKey) {
+                alert('请输入APICore API Key');
+                return;
+            }
+            
+            testBtn.disabled = true;
+            testBtn.textContent = '测试中...';
+            debug.textContent += '\n\n🔍 开始测试APICore连接...\n';
+            
+            try {
+                const result = await callAPICore('测试图片生成', apiKey, {
+                    size: "512x512",
+                    n: 1
+                });
+                
+                debug.textContent += `✅ APICore连接测试成功!\n`;
+                debug.textContent += `🏢 平台: ${result.platform}\n`;
+                debug.textContent += `🤖 模型: ${result.model}\n`;
+                debug.textContent += `🖼️ 测试图片: ${result.imageUrl}\n`;
+                
+                alert('✅ APICore连接测试成功!\n\n' + 
+                      `平台: ${result.platform}\n` +
+                      `模型: ${result.model}\n` +
+                      `图片已生成: ${result.imageUrl.substring(0, 50)}...`);
+                      
+            } catch (error) {
+                debug.textContent += `❌ APICore连接测试失败: ${error.message}\n`;
+                alert('❌ APICore连接测试失败:\n\n' + error.message);
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = '测试连接';
+            }
+        }
+        
+        // 生成图片
+        async function generateImage() {
+            const apiKey = document.getElementById('apicoreApiKey').value;
+            const promptText = document.getElementById('promptText').value;
+            const imageSize = document.getElementById('imageSize').value;
+            const imageQuality = document.getElementById('imageQuality').value;
+            const generateBtn = document.getElementById('generateBtn');
+            const result = document.getElementById('result');
+            const debug = document.getElementById('debug');
+            
+            if (!apiKey || !promptText) {
+                alert('请输入API Key和提示词');
+                return;
+            }
+            
+            generateBtn.disabled = true;
+            generateBtn.textContent = '生成中...';
+            
+            try {
+                debug.textContent += '\n\n🚀 开始生成图片...\n';
+                
+                const imageResult = await callAPICore(promptText, apiKey, {
+                    size: imageSize,
+                    quality: imageQuality,
+                    n: 1
+                });
+                
+                // 显示结果
+                result.innerHTML = `
+                    <div class="image-item">
+                        <h4>✅ 生成成功</h4>
+                        <p><strong>平台:</strong> ${imageResult.platform}</p>
+                        <p><strong>模型:</strong> ${imageResult.model}</p>
+                        <p><strong>尺寸:</strong> ${imageSize}</p>
+                        <p><strong>质量:</strong> ${imageQuality}</p>
+                        <p><strong>提示词:</strong> ${promptText.substring(0, 100)}...</p>
+                        <img src="${imageResult.imageUrl}" alt="Generated Image" onload="console.log('图片加载成功')" onerror="console.log('图片加载失败')">
+                        <div style="margin-top: 10px;">
+                            <button onclick="downloadImage('${imageResult.imageUrl}')" style="background-color: #52c41a;">下载图片</button>
+                            <button onclick="copyUrl('${imageResult.imageUrl}')" style="background-color: #1890ff; margin-left: 10px;">复制链接</button>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="image-item" style="border-color: #ff4d4f;">
+                        <h4 style="color: #ff4d4f;">❌ 生成失败</h4>
+                        <p><strong>错误信息:</strong> ${error.message}</p>
+                        <div style="margin-top: 10px; padding: 10px; background-color: #fff2f0; border-radius: 4px;">
+                            <h5 style="margin: 0 0 5px 0;">💡 可能的解决方案:</h5>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                <li>检查APICore API Key是否正确</li>
+                                <li>确认账户余额是否充足</li>
+                                <li>检查提示词是否包含敏感内容</li>
+                                <li>稍后重试（可能是临时服务问题）</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '生成图片';
+            }
+        }
+        
+        // 下载图片
+        function downloadImage(url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `apicore-generated-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // 复制链接
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('图片链接已复制到剪贴板');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动复制链接');
+            });
+        }
+        
+        // 清空日志
+        function clearLog() {
+            document.getElementById('debug').textContent = '日志已清空，等待新的操作...';
+        }
+    </script>
+</body>
+</html>
