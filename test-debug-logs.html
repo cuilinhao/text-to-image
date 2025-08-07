@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>调试日志测试</title>
+    <style>
+        body {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        .debug {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #40a9ff;
+        }
+        input[type="password"] {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+        .error {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+        .info {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 API调用状态监听测试</h1>
+    
+    <div class="test-section">
+        <h3>📋 测试说明</h3>
+        <p>这个页面用于测试增强的API调用状态监听功能。现在调试日志会显示：</p>
+        <ul>
+            <li>🔍 API调用开始时间和参数</li>
+            <li>🌐 具体的API端点和请求体</li>
+            <li>📊 响应状态和数据结构</li>
+            <li>⏱️ 每个步骤的耗时统计</li>
+            <li>🖼️ 图片URL提取过程</li>
+            <li>❌ 详细的错误信息和重试过程</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 API配置</h3>
+        <div>
+            <label>云雾API Key:</label>
+            <input type="password" id="yunwuApiKey" placeholder="输入云雾API Key">
+            <button onclick="testYunwuAPI()">测试云雾API</button>
+        </div>
+        <div>
+            <label>APICore API Key:</label>
+            <input type="password" id="apicoreApiKey" placeholder="输入APICore API Key">
+            <button onclick="testAPICoreAPI()">测试APICore API</button>
+        </div>
+        <div>
+            <button onclick="testMultiPlatform()">测试多平台调用</button>
+            <button onclick="clearDebugLog()">清空日志</button>
+        </div>
+    </div>
+    
+    <div id="status" class="status info">
+        准备测试API调用状态监听...
+    </div>
+    
+    <div class="debug" id="debug">等待API调用测试...</div>
+    
+    <script>
+        // 模拟主页面的调试日志功能
+        function clearDebugLog() {
+            const debug = document.getElementById('debug');
+            debug.textContent = '日志已清空，等待新的API调用...';
+        }
+        
+        // 测试云雾API调用
+        async function testYunwuAPI() {
+            const apiKey = document.getElementById('yunwuApiKey').value;
+            const status = document.getElementById('status');
+            
+            if (!apiKey) {
+                status.className = 'status error';
+                status.textContent = '❌ 请输入云雾API Key';
+                return;
+            }
+            
+            status.className = 'status info';
+            status.textContent = '🔄 正在测试云雾API调用...';
+            
+            // 模拟设置API Key到主页面
+            const mockApiKeyInput = document.createElement('input');
+            mockApiKeyInput.id = 'apiKey';
+            mockApiKeyInput.value = apiKey;
+            mockApiKeyInput.style.display = 'none';
+            document.body.appendChild(mockApiKeyInput);
+            
+            try {
+                // 调用云雾API函数（需要从主页面导入）
+                if (typeof callYunwuAPIFixed === 'function') {
+                    const result = await callYunwuAPIFixed('测试提示词：一个美丽的风景画');
+                    status.className = 'status success';
+                    status.textContent = '✅ 云雾API测试成功！';
+                } else {
+                    status.className = 'status error';
+                    status.textContent = '❌ 无法找到云雾API函数，请在主页面中测试';
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `❌ 云雾API测试失败: ${error.message}`;
+            } finally {
+                document.body.removeChild(mockApiKeyInput);
+            }
+        }
+        
+        // 测试APICore API调用
+        async function testAPICoreAPI() {
+            const apiKey = document.getElementById('apicoreApiKey').value;
+            const status = document.getElementById('status');
+            
+            if (!apiKey) {
+                status.className = 'status error';
+                status.textContent = '❌ 请输入APICore API Key';
+                return;
+            }
+            
+            status.className = 'status info';
+            status.textContent = '🔄 正在测试APICore API调用...';
+            
+            try {
+                // 调用APICore API函数（需要从主页面导入）
+                if (typeof callAPICore === 'function') {
+                    const result = await callAPICore('测试提示词：一个美丽的风景画', apiKey);
+                    status.className = 'status success';
+                    status.textContent = '✅ APICore API测试成功！';
+                } else {
+                    status.className = 'status error';
+                    status.textContent = '❌ 无法找到APICore API函数，请在主页面中测试';
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `❌ APICore API测试失败: ${error.message}`;
+            }
+        }
+        
+        // 测试多平台调用
+        async function testMultiPlatform() {
+            const yunwuApiKey = document.getElementById('yunwuApiKey').value;
+            const apicoreApiKey = document.getElementById('apicoreApiKey').value;
+            const status = document.getElementById('status');
+            
+            if (!yunwuApiKey && !apicoreApiKey) {
+                status.className = 'status error';
+                status.textContent = '❌ 请至少输入一个API Key';
+                return;
+            }
+            
+            status.className = 'status info';
+            status.textContent = '🔄 正在测试多平台API调用...';
+            
+            // 构建平台配置
+            const platforms = [];
+            if (yunwuApiKey) {
+                platforms.push({ name: '云雾API', apiKey: yunwuApiKey });
+            }
+            if (apicoreApiKey) {
+                platforms.push({ name: 'APICore', apiKey: apicoreApiKey });
+            }
+            
+            try {
+                // 调用多平台函数（需要从主页面导入）
+                if (typeof generateImageMultiPlatform === 'function') {
+                    const result = await generateImageMultiPlatform(
+                        '测试提示词：一个美丽的风景画',
+                        platforms,
+                        0,
+                        0
+                    );
+                    status.className = 'status success';
+                    status.textContent = `✅ 多平台测试成功！使用平台: ${result.platform}`;
+                } else {
+                    status.className = 'status error';
+                    status.textContent = '❌ 无法找到多平台函数，请在主页面中测试';
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `❌ 多平台测试失败: ${error.message}`;
+            }
+        }
+        
+        // 尝试从主页面导入函数
+        window.onload = function() {
+            try {
+                // 如果在iframe中或者有父窗口，尝试获取函数
+                if (window.parent && window.parent !== window) {
+                    if (window.parent.callYunwuAPIFixed) {
+                        window.callYunwuAPIFixed = window.parent.callYunwuAPIFixed;
+                    }
+                    if (window.parent.callAPICore) {
+                        window.callAPICore = window.parent.callAPICore;
+                    }
+                    if (window.parent.generateImageMultiPlatform) {
+                        window.generateImageMultiPlatform = window.parent.generateImageMultiPlatform;
+                    }
+                }
+            } catch (e) {
+                console.log('无法从父窗口获取函数，请在主页面中测试');
+            }
+            
+            const status = document.getElementById('status');
+            status.textContent = '✅ 调试日志监听已就绪，请配置API Key并开始测试';
+        };
+    </script>
+</body>
+</html>
