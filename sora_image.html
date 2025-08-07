@@ -319,6 +319,7 @@
             <div style="background-color: #e6f7ff; border: 1px solid #91d5ff; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
                 <h4 style="margin: 0 0 10px 0; color: #1890ff;">💡 使用提示</h4>
                 <ul style="margin: 0; padding-left: 20px;">
+                    <li><strong>🔑 API Key安全</strong>：请妥善保管您的API Key，不要分享给他人。本工具仅在浏览器本地存储，不会上传到服务器</li>
                     <li><strong>图片要求</strong>：建议上传清晰的角色图片，避免过于暴露或敏感的内容</li>
                     <li><strong>模型选择</strong>：可以手动选择不同的模型，如Claude-3 Sonnet对内容限制较为宽松</li>
                     <li><strong>图片压缩</strong>：系统会自动将图片压缩到1024px以内，提高处理成功率</li>
@@ -415,7 +416,7 @@ T台场景与氛围（一句话点明，强制T台）：
                 <div class="input-group">
                     <label for="apicoreApiKey">APICore API Key (备用平台):</label>
                     <div class="button-group">
-                        <input type="password" id="apicoreApiKey" placeholder="输入你的APICore API Key (可选)" value="sk-U1KUgGJjGdIPXhq6Lfpo9U7Zp7SkjIYis7gIN2m76YDI4sqh" style="flex: 1;">
+                        <input type="password" id="apicoreApiKey" placeholder="输入你的APICore API Key (可选)" value="" style="flex: 1;">
                         <button onclick="testAPICoreConnection()" id="testAPICoreBtn" style="width: auto; padding: 8px 16px;">测试连接</button>
                     </div>
                     <small style="color: #666; margin-top: 5px;">💡 APICore作为备用平台，当云雾API不可用时自动切换</small>
@@ -467,6 +468,7 @@ T台场景与氛围（一句话点明，强制T台）：
             <div style="background-color: #fff2e8; border: 1px solid #ffbb96; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
                 <h4 style="margin: 0 0 10px 0; color: #fa8c16;">📖 故事提示词功能说明</h4>
                 <ul style="margin: 0; padding-left: 20px;">
+                    <li><strong>🔑 API Key安全</strong>：请妥善保管您的API Key，不要分享给他人。本工具仅在浏览器本地存储，不会上传到服务器</li>
                     <li><strong>AI生成故事</strong>：通过元提示词+目录图片自动生成故事分镜脚本</li>
                     <li><strong>CSV导入</strong>：支持导入现有的故事脚本文件，包含分镜序号和文生图prompt</li>
                     <li><strong>参考图片</strong>：为每个分镜指定参考图片，系统会自动匹配或手动选择</li>
@@ -556,6 +558,7 @@ T台场景与氛围（一句话点明，强制T台）：
                 <div>
                     <button onclick="clearDebugLog()" style="background-color: #ff4d4f; color: white; padding: 5px 10px; font-size: 12px;">清空日志</button>
                     <button onclick="copyDebugLog()" style="background-color: #52c41a; color: white; padding: 5px 10px; font-size: 12px; margin-left: 5px;">复制日志</button>
+                    <button onclick="clearAllApiKeys()" style="background-color: #fa8c16; color: white; padding: 5px 10px; font-size: 12px; margin-left: 5px;">🔐 清除API Key</button>
                 </div>
             </div>
             <div class="debug" id="debug">等待操作...</div>
@@ -5321,6 +5324,94 @@ console.log('✅ APICore平台集成补丁已加载');
         }
         
         console.log("✅ APICore UI集成完成");
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否有保存的API Key（从localStorage）
+            checkSavedApiKeys();
+            
+            // 显示API Key安全提醒
+            showApiKeySecurityReminder();
+        });
+        
+        // 检查保存的API Key
+        function checkSavedApiKeys() {
+            const openrouterKey = localStorage.getItem('openrouterApiKey');
+            const yunwuKey = localStorage.getItem('yunwuApiKey');
+            const apicoreKey = localStorage.getItem('apicoreApiKey');
+            
+            if (openrouterKey) {
+                document.getElementById('openrouterKey').value = openrouterKey;
+            }
+            if (yunwuKey) {
+                document.getElementById('apiKey').value = yunwuKey;
+            }
+            if (apicoreKey) {
+                document.getElementById('apicoreApiKey').value = apicoreKey;
+            }
+        }
+        
+        // 显示API Key安全提醒
+        function showApiKeySecurityReminder() {
+            const debug = document.getElementById('debug');
+            debug.textContent = `🔐 API Key 安全提醒：
+            
+✅ 本工具的安全特性：
+• API Key 仅存储在您的浏览器本地，不会上传到任何服务器
+• 所有API调用都是直接从您的浏览器发送到对应的AI服务商
+• 您的图片和提示词数据不会经过第三方服务器
+
+🔑 请妥善保管您的API Key：
+• 不要在公共场所或不安全的网络环境下输入API Key
+• 不要将API Key分享给他人或发布到网上
+• 定期检查您的API使用情况和账单
+• 如果怀疑API Key泄露，请立即到对应平台重新生成
+
+💡 使用建议：
+• 建议为此工具创建专门的API Key，并设置合理的使用限额
+• 使用完毕后可以清除浏览器数据来删除本地保存的API Key
+• 在共享设备上使用时，请使用无痕/隐私模式
+
+等待您配置API Key开始使用...`;
+        }
+        
+        // 保存API Key到localStorage
+        function saveApiKey(keyId, value) {
+            if (value && value.trim()) {
+                localStorage.setItem(keyId, value.trim());
+            } else {
+                localStorage.removeItem(keyId);
+            }
+        }
+        
+        // 为API Key输入框添加自动保存功能
+        document.getElementById('openrouterKey').addEventListener('input', function(e) {
+            saveApiKey('openrouterApiKey', e.target.value);
+        });
+        
+        document.getElementById('apiKey').addEventListener('input', function(e) {
+            saveApiKey('yunwuApiKey', e.target.value);
+        });
+        
+        document.getElementById('apicoreApiKey').addEventListener('input', function(e) {
+            saveApiKey('apicoreApiKey', e.target.value);
+        });
+        
+        // 清除所有保存的API Key
+        function clearAllApiKeys() {
+            if (confirm('确定要清除所有保存的API Key吗？此操作不可撤销。')) {
+                localStorage.removeItem('openrouterApiKey');
+                localStorage.removeItem('yunwuApiKey');
+                localStorage.removeItem('apicoreApiKey');
+                
+                document.getElementById('openrouterKey').value = '';
+                document.getElementById('apiKey').value = '';
+                document.getElementById('apicoreApiKey').value = '';
+                
+                alert('所有API Key已清除');
+                showApiKeySecurityReminder();
+            }
+        }
     </script>
 </body>
 </html>

@@ -24,7 +24,7 @@ npm run dev
 ### 3. 配置API Key
 在页面中输入你的云雾API Key：
 ```
-sk-VTv4s0IaV72yIgzMYIhvW6pg0h5ikOxeGMPq6ovHB8gi1U5q
+请输入你自己的云雾API Key (格式: sk-xxxxxxxxxxxxxxxx)
 ```
 
 ---

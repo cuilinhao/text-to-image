@@ -56,7 +56,7 @@
     
     <div>
         <h3>🔑 API Key 配置</h3>
-        <p>使用提供的 API Key: sk-U1KUgGJjGdIPXhq6Lfpo9U7Zp7SkjIYis7gIN2m76YDI4sqh</p>
+        <p>请在代码中配置您自己的 API Key</p>
         <p><strong>问题分析:</strong> 发现JSON格式错误和超时问题，现在进行修复</p>
     </div>
     
@@ -71,7 +71,11 @@
     <div id="result"></div>
 
     <script>
-        const API_KEY = 'sk-U1KUgGJjGdIPXhq6Lfpo9U7Zp7SkjIYis7gIN2m76YDI4sqh';
+        const API_KEY = ''; // 请在此处输入你的APICore API Key
+        
+        if (!API_KEY) {
+            alert('请先在代码中配置您的APICore API Key');
+        }
         
         function log(message) {
             const debug = document.getElementById('debug');

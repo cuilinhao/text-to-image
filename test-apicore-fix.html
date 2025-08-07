@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>APICore 修复测试</title>
@@ -10,6 +11,7 @@
             padding: 20px;
             font-family: Arial, sans-serif;
         }
+
         .debug {
             background-color: #1e1e1e;
             color: #f0f0f0;
@@ -23,6 +25,7 @@
             overflow-y: auto;
             margin: 20px 0;
         }
+
         button {
             padding: 10px 20px;
             background-color: #1890ff;
@@ -32,9 +35,11 @@
             cursor: pointer;
             margin: 10px 5px;
         }
+
         button:disabled {
             background-color: #ccc;
         }
+
         .success {
             background-color: #f6ffed;
             border: 1px solid #b7eb8f;
@@ -42,6 +47,7 @@
             border-radius: 6px;
             margin: 10px 0;
         }
+
         .error {
             background-color: #fff2f0;
             border: 1px solid #ffccc7;
@@ -51,39 +57,40 @@
         }
     </style>
 </head>
+
 <body>
     <h1>🔧 APICore 修复测试</h1>
-    
+
     <div>
         <h3>🔑 API Key 配置</h3>
-        <p>使用提供的 API Key: sk-U1KUgGJjGdIPXhq6Lfpo9U7Zp7SkjIYis7gIN2m76YDI4sqh</p>
+        <p>使用提供的 API Key</p>
     </div>
-    
+
     <div>
         <button onclick="testAPICore()" id="testBtn">测试 APICore 连接</button>
         <button onclick="generateTestImage()" id="generateBtn">生成测试图片</button>
         <button onclick="clearLog()" id="clearBtn">清空日志</button>
     </div>
-    
+
     <div class="debug" id="debug">等待测试...</div>
-    
+
     <div id="result"></div>
 
     <script>
-        const API_KEY = 'sk-U1KUgGJjGdIPXhq6Lfpo9U7Zp7SkjIYis7gIN2m76YDI4sqh';
-        
+        const API_KEY = ''; // 请在此处输入你的APICore API Key
+
         function log(message) {
             const debug = document.getElementById('debug');
             const timestamp = new Date().toLocaleTimeString();
             debug.textContent += `\n[${timestamp}] ${message}`;
             debug.scrollTop = debug.scrollHeight;
         }
-        
+
         function clearLog() {
             document.getElementById('debug').textContent = '日志已清空...';
             document.getElementById('result').innerHTML = '';
         }
-        
+
         // 优化的 APICore 调用函数
         async function callAPICore(prompt, apiKey, options = {}) {
             const {
@@ -154,11 +161,11 @@
                 } else {
                     const errorText = await response.text();
                     log(`❌ APICore错误响应: ${errorText}`);
-                    
+
                     try {
                         const errorData = JSON.parse(errorText);
                         const errorMessage = errorData.error?.message || errorData.message || errorText;
-                        
+
                         // 提供更详细的错误信息
                         if (response.status === 401) {
                             throw new Error(`认证失败: 请检查API Key是否正确 (${errorMessage})`);
@@ -178,25 +185,25 @@
                     log(`⏰ 请求超时 (3分钟)`);
                     throw new Error('请求超时，图片生成时间过长，请稍后重试');
                 }
-                
+
                 log(`💥 请求异常: ${error.message}`);
                 throw error;
             }
         }
-        
+
         // 测试连接
         async function testAPICore() {
             const testBtn = document.getElementById('testBtn');
             testBtn.disabled = true;
             testBtn.textContent = '测试中...';
-            
+
             try {
                 log('🔍 开始测试APICore连接...');
                 const result = await callAPICore('测试图片生成', API_KEY, {
                     size: "512x512",
                     n: 1
                 });
-                
+
                 log('🎉 连接测试成功!');
                 document.getElementById('result').innerHTML = `
                     <div class="success">
@@ -207,7 +214,7 @@
                         <img src="${result.imageUrl}" style="max-width: 300px; margin-top: 10px;" alt="测试图片">
                     </div>
                 `;
-                
+
             } catch (error) {
                 log(`❌ 连接测试失败: ${error.message}`);
                 document.getElementById('result').innerHTML = `
@@ -221,13 +228,13 @@
                 testBtn.textContent = '测试 APICore 连接';
             }
         }
-        
+
         // 生成测试图片
         async function generateTestImage() {
             const generateBtn = document.getElementById('generateBtn');
             generateBtn.disabled = true;
             generateBtn.textContent = '生成中...';
-            
+
             try {
                 log('🎨 开始生成测试图片...');
                 const result = await callAPICore('一个可爱的小猫咪在花园里玩耍，阳光明媚，色彩鲜艳', API_KEY, {
@@ -235,7 +242,7 @@
                     quality: "hd",
                     n: 1
                 });
-                
+
                 log('🎉 图片生成成功!');
                 document.getElementById('result').innerHTML = `
                     <div class="success">
@@ -248,7 +255,7 @@
                         <a href="${result.imageUrl}" download="apicore-test.png" style="display: inline-block; margin-top: 10px; padding: 5px 10px; background-color: #52c41a; color: white; text-decoration: none; border-radius: 4px;">下载图片</a>
                     </div>
                 `;
-                
+
             } catch (error) {
                 log(`❌ 图片生成失败: ${error.message}`);
                 document.getElementById('result').innerHTML = `
@@ -271,4 +278,5 @@
         }
     </script>
 </body>
+
 </html>
