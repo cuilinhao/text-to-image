@@ -161,6 +161,30 @@
         .upload-area:hover {
             border-color: #1890ff;
         }
+        .example-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        .example-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .example-image:hover {
+            border-color: #1890ff;
+            transform: scale(1.05);
+        }
+        .example-image.selected {
+            border-color: #52c41a;
+            border-width: 3px;
+        }
         .button-group {
             display: flex;
             gap: 10px;
@@ -356,6 +380,21 @@
                     <div class="upload-area" onclick="document.getElementById('refImageInput').click()">
                         点击选择多张图片或拖拽图片到这里
                         <input type="file" id="refImageInput" accept="image/*" multiple style="display: none" onchange="handleRefImageUpload(event)">
+                        
+                        <!-- 示例图片展示 -->
+                        <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                            💡 或点击下方示例图片快速选择：
+                        </div>
+                        <div class="example-images">
+                            <img src="./public/咖啡杯宝宝.jpg" alt="咖啡杯宝宝" class="example-image" onclick="selectExampleImage(this, './public/咖啡杯宝宝.jpg')" title="咖啡杯宝宝">
+                            <img src="./public/咖啡杯妈妈.png" alt="咖啡杯妈妈" class="example-image" onclick="selectExampleImage(this, './public/咖啡杯妈妈.png')" title="咖啡杯妈妈">
+                            <img src="./public/卡布奇诺.png" alt="卡布奇诺" class="example-image" onclick="selectExampleImage(this, './public/卡布奇诺.png')" title="卡布奇诺">
+                            <img src="./public/卡布奇诺01.jpg" alt="卡布奇诺01" class="example-image" onclick="selectExampleImage(this, './public/卡布奇诺01.jpg')" title="卡布奇诺01">
+                            <img src="./public/橙子小孩.png" alt="橙子小孩" class="example-image" onclick="selectExampleImage(this, './public/橙子小孩.png')" title="橙子小孩">
+                            <img src="./public/橘子肌肉男.png" alt="橘子肌肉男" class="example-image" onclick="selectExampleImage(this, './public/橘子肌肉男.png')" title="橘子肌肉男">
+                            <img src="./public/木棍人2.png" alt="木棍人2" class="example-image" onclick="selectExampleImage(this, './public/木棍人2.png')" title="木棍人2">
+                            <img src="./public/木棍人tuntun.png" alt="木棍人tuntun" class="example-image" onclick="selectExampleImage(this, './public/木棍人tuntun.png')" title="木棍人tuntun">
+                        </div>
                     </div>
                     <div id="refImagePreview"></div>
                 </div>
@@ -502,6 +541,21 @@ T台场景与氛围（一句话点明，强制T台）：
                     <div class="upload-area" onclick="document.getElementById('storyRefImageInput').click()">
             点击选择多张图片或拖拽图片到这里
                         <input type="file" id="storyRefImageInput" accept="image/*" multiple style="display: none" onchange="handleStoryRefImageUpload(event)">
+                        
+                        <!-- 示例图片展示 -->
+                        <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                            💡 或点击下方示例图片快速选择：
+                        </div>
+                        <div class="example-images">
+                            <img src="./public/咖啡杯宝宝.jpg" alt="咖啡杯宝宝" class="example-image" onclick="selectStoryExampleImage(this, './public/咖啡杯宝宝.jpg')" title="咖啡杯宝宝">
+                            <img src="./public/咖啡杯妈妈.png" alt="咖啡杯妈妈" class="example-image" onclick="selectStoryExampleImage(this, './public/咖啡杯妈妈.png')" title="咖啡杯妈妈">
+                            <img src="./public/卡布奇诺.png" alt="卡布奇诺" class="example-image" onclick="selectStoryExampleImage(this, './public/卡布奇诺.png')" title="卡布奇诺">
+                            <img src="./public/卡布奇诺01.jpg" alt="卡布奇诺01" class="example-image" onclick="selectStoryExampleImage(this, './public/卡布奇诺01.jpg')" title="卡布奇诺01">
+                            <img src="./public/橙子小孩.png" alt="橙子小孩" class="example-image" onclick="selectStoryExampleImage(this, './public/橙子小孩.png')" title="橙子小孩">
+                            <img src="./public/橘子肌肉男.png" alt="橘子肌肉男" class="example-image" onclick="selectStoryExampleImage(this, './public/橘子肌肉男.png')" title="橘子肌肉男">
+                            <img src="./public/木棍人2.png" alt="木棍人2" class="example-image" onclick="selectStoryExampleImage(this, './public/木棍人2.png')" title="木棍人2">
+                            <img src="./public/木棍人tuntun.png" alt="木棍人tuntun" class="example-image" onclick="selectStoryExampleImage(this, './public/木棍人tuntun.png')" title="木棍人tuntun">
+                        </div>
         </div>
         <div id="storyRefImagePreview"></div>
     </div>
@@ -712,6 +766,41 @@ T台场景与氛围（一句话点明，强制T台）：
             debug.scrollTop = debug.scrollHeight;
         }
         
+        // 选择故事示例图片的函数
+        function selectStoryExampleImage(imgElement, imagePath) {
+            // 移除其他图片的选中状态
+            document.querySelectorAll('.example-image').forEach(img => {
+                img.classList.remove('selected');
+            });
+            
+            // 添加选中状态
+            imgElement.classList.add('selected');
+            
+            // 将示例图片转换为base64并添加到storyRefImages
+            fetch(imagePath)
+                .then(response => response.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageName = imagePath.split('/').pop();
+                        
+                        // 压缩图片
+                        compressImage(blob, (compressedDataUrl) => {
+                            storyRefImages.push({
+                                data: compressedDataUrl,
+                                name: imageName
+                            });
+                            displayStoryRefImages();
+                        });
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(error => {
+                    console.error('加载故事示例图片失败:', error);
+                    alert('加载示例图片失败，请尝试上传本地图片');
+                });
+        }
+
         // 故事参考图片上传处理
         function handleStoryRefImageUpload(event) {
             const files = Array.from(event.target.files);
@@ -1988,6 +2077,41 @@ T台场景与氛围（一句话点明，强制T台）：
             }
             
             downloadBtn.textContent = '保存所有图片';
+        }
+
+        // 选择示例图片的函数
+        function selectExampleImage(imgElement, imagePath) {
+            // 移除其他图片的选中状态
+            document.querySelectorAll('.example-image').forEach(img => {
+                img.classList.remove('selected');
+            });
+            
+            // 添加选中状态
+            imgElement.classList.add('selected');
+            
+            // 将示例图片转换为base64并添加到refImages
+            fetch(imagePath)
+                .then(response => response.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageName = imagePath.split('/').pop();
+                        
+                        // 压缩图片
+                        compressImage(blob, (compressedDataUrl) => {
+                            refImages.push({
+                                data: compressedDataUrl,
+                                name: imageName
+                            });
+                            displayRefImages();
+                        });
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(error => {
+                    console.error('加载示例图片失败:', error);
+                    alert('加载示例图片失败，请尝试上传本地图片');
+                });
         }
 
         // 原有的处理参考图片上传 (支持多张)
