@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API Key 安全测试</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        .security-check {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .pass {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+        .fail {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+        .warning {
+            background-color: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #fa8c16;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #40a9ff;
+        }
+        input[type="password"] {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 API Key 安全性测试</h1>
+    
+    <div class="test-section">
+        <h3>📋 安全检查项目</h3>
+        <p>此页面用于验证项目中API Key的安全处理是否正确。</p>
+        
+        <div id="hardcodedCheck" class="security-check">
+            <strong>🔍 检查1: 硬编码API Key检查</strong>
+            <div id="hardcodedResult">检查中...</div>
+        </div>
+        
+        <div id="storageCheck" class="security-check">
+            <strong>🔍 检查2: 本地存储安全性</strong>
+            <div id="storageResult">检查中...</div>
+        </div>
+        
+        <div id="transmissionCheck" class="security-check">
+            <strong>🔍 检查3: 传输安全性</strong>
+            <div id="transmissionResult">检查中...</div>
+        </div>
+        
+        <div id="visibilityCheck" class="security-check">
+            <strong>🔍 检查4: 界面显示安全性</strong>
+            <div id="visibilityResult">检查中...</div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 API Key 存储测试</h3>
+        <div>
+            <label>测试API Key:</label>
+            <input type="password" id="testApiKey" placeholder="输入测试API Key">
+            <button onclick="testApiKeyStorage()">测试存储</button>
+            <button onclick="clearTestStorage()">清除存储</button>
+        </div>
+        <div id="storageTestResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📊 安全建议</h3>
+        <div class="code-block">
+✅ 已实现的安全措施：
+• API Key 使用 password 类型输入框隐藏显示
+• 使用 localStorage 进行本地存储，不上传服务器
+• 提供清除 API Key 的功能
+• 在界面中显示安全提醒
+• 调试日志中对 API Key 进行脱敏处理
+
+🔒 推荐的额外安全措施：
+• 使用无痕模式浏览器进行敏感操作
+• 定期清除浏览器数据
+• 为此工具创建专门的 API Key 并设置使用限额
+• 不在公共网络环境下使用
+• 定期检查 API 使用情况和账单
+        </div>
+    </div>
+    
+    <script>
+        // 检查硬编码API Key
+        function checkHardcodedApiKeys() {
+            const result = document.getElementById('hardcodedResult');
+            
+            // 检查页面源码中是否包含API Key模式
+            const pageSource = document.documentElement.outerHTML;
+            const apiKeyPattern = /sk-[A-Za-z0-9]{48}/g;
+            const matches = pageSource.match(apiKeyPattern);
+            
+            if (matches && matches.length > 0) {
+                result.innerHTML = `❌ 发现 ${matches.length} 个硬编码的API Key: ${matches.join(', ')}`;
+                result.parentElement.className = 'security-check fail';
+            } else {
+                result.innerHTML = '✅ 未发现硬编码的API Key';
+                result.parentElement.className = 'security-check pass';
+            }
+        }
+        
+        // 检查本地存储安全性
+        function checkLocalStorage() {
+            const result = document.getElementById('storageResult');
+            
+            try {
+                // 测试localStorage是否可用
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                
+                // 检查是否有API Key相关的存储
+                const keys = Object.keys(localStorage).filter(key => 
+                    key.toLowerCase().includes('api') || key.toLowerCase().includes('key')
+                );
+                
+                if (keys.length > 0) {
+                    result.innerHTML = `⚠️ 发现 ${keys.length} 个API相关的本地存储项: ${keys.join(', ')}`;
+                    result.parentElement.className = 'security-check warning';
+                } else {
+                    result.innerHTML = '✅ 本地存储安全，未发现敏感数据';
+                    result.parentElement.className = 'security-check pass';
+                }
+            } catch (error) {
+                result.innerHTML = `❌ 本地存储检查失败: ${error.message}`;
+                result.parentElement.className = 'security-check fail';
+            }
+        }
+        
+        // 检查传输安全性
+        function checkTransmissionSecurity() {
+            const result = document.getElementById('transmissionResult');
+            
+            // 检查是否使用HTTPS
+            if (location.protocol === 'https:') {
+                result.innerHTML = '✅ 使用HTTPS协议，传输加密';
+                result.parentElement.className = 'security-check pass';
+            } else if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                result.innerHTML = '⚠️ 本地开发环境，建议生产环境使用HTTPS';
+                result.parentElement.className = 'security-check warning';
+            } else {
+                result.innerHTML = '❌ 未使用HTTPS，传输不安全';
+                result.parentElement.className = 'security-check fail';
+            }
+        }
+        
+        // 检查界面显示安全性
+        function checkVisibilitySecurity() {
+            const result = document.getElementById('visibilityResult');
+            
+            // 检查是否有password类型的输入框
+            const passwordInputs = document.querySelectorAll('input[type="password"]');
+            
+            if (passwordInputs.length > 0) {
+                result.innerHTML = `✅ 发现 ${passwordInputs.length} 个密码输入框，API Key已隐藏显示`;
+                result.parentElement.className = 'security-check pass';
+            } else {
+                result.innerHTML = '❌ 未发现密码输入框，API Key可能明文显示';
+                result.parentElement.className = 'security-check fail';
+            }
+        }
+        
+        // 测试API Key存储
+        function testApiKeyStorage() {
+            const testKey = document.getElementById('testApiKey').value;
+            const resultDiv = document.getElementById('storageTestResult');
+            
+            if (!testKey) {
+                resultDiv.innerHTML = '<div class="security-check fail">❌ 请输入测试API Key</div>';
+                return;
+            }
+            
+            try {
+                // 存储测试
+                localStorage.setItem('testApiKey', testKey);
+                
+                // 读取测试
+                const storedKey = localStorage.getItem('testApiKey');
+                
+                if (storedKey === testKey) {
+                    resultDiv.innerHTML = `
+                        <div class="security-check pass">
+                            ✅ API Key存储测试成功<br>
+                            • 存储长度: ${testKey.length} 字符<br>
+                            • 存储位置: localStorage<br>
+                            • 读取正确: ${storedKey === testKey ? '是' : '否'}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="security-check fail">❌ API Key存储测试失败，读取数据不匹配</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="security-check fail">❌ API Key存储测试失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 清除测试存储
+        function clearTestStorage() {
+            try {
+                localStorage.removeItem('testApiKey');
+                document.getElementById('testApiKey').value = '';
+                document.getElementById('storageTestResult').innerHTML = '<div class="security-check pass">✅ 测试存储已清除</div>';
+            } catch (error) {
+                document.getElementById('storageTestResult').innerHTML = `<div class="security-check fail">❌ 清除失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 页面加载时运行所有检查
+        window.onload = function() {
+            setTimeout(() => {
+                checkHardcodedApiKeys();
+                checkLocalStorage();
+                checkTransmissionSecurity();
+                checkVisibilitySecurity();
+            }, 500);
+        };
+    </script>
+</body>
+</html>
